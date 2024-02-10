@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #333; /* Dark Grey */
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff; /* White */
+            margin-bottom: 20px;
+        }
+
+        #calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px; /* Increased gap for better spacing */
+            max-width: 400px; /* Increased max-width for a larger calculator */
+            background-color: #2c3e50; /* Midnight Blue */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #display {
+            grid-column: span 4;
+            height: 40px;
+            text-align: right;
+            padding: 0 10px;
+            font-size: 1.5em;
+            border: 1px solid #34495e; /* Wet Asphalt */
+            background-color: #ecf0f1; /* Clouds */
+            border-bottom: none;
+            color: #333;
+        }
+
+        button {
+            font-size: 1.2em;
+            padding: 15px; /* Increased padding for larger buttons */
+            cursor: pointer;
+            border: none;
+            outline: none;
+            background-color: #001f3f; /* Navy Blue */
+            color: #fff; /* White */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #003366; /* Darker Navy Blue */
+        }
+
+        button.operator {
+            background-color: #d2b48c; /* Tan or Light Coffee */
+            color: white;
+        }
+
+        button.double {
+            grid-column: span 2;
+        }
+    </style>
+    <title>Pritam's Calcii</title>
+</head>
+<body>
+
+<h1>Pritam's Calcii</h1>
+
+<div id="calculator">
+    <div id="display"></div>
+    <button>7</button>
+    <button>8</button>
+    <button>9</button>
+    <button class="operator">/</button>
+    <button>4</button>
+    <button>5</button>
+    <button>6</button>
+    <button class="operator">*</button>
+    <button>1</button>
+    <button>2</button>
+    <button>3</button>
+    <button class="operator">-</button>
+    <button class="double">0</button>
+    <button>.</button>
+    <button class="operator">=</button>
+    <button class="operator">+</button>
+    <button class="operator" onclick="clearEntry()">CE</button>
+    <button class="double operator" onclick="clearAll()">C</button>
+    <button class="operator" onclick="calculateSquareRoot()">√</button>
+    <button class="operator" onclick="calculatePercentage()">%</button>
+    <button class="operator" onclick="calculatePower()">^</button>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const display = document.getElementById("display");
+        const buttons = document.querySelectorAll("#calculator button");
+        let currentInput = "";
+        let operator = "";
+        let firstOperand = "";
+
+        buttons.forEach(button => {
+            button.addEventListener("click", function () {
+                const buttonText = button.textContent;
+
+                if (!isNaN(buttonText) || buttonText === ".") {
+                    currentInput += buttonText;
+                    updateDisplay();
+                } else if (buttonText === "CE") {
+                    clearEntry();
+                } else if (buttonText === "=") {
+                    performCalculation();
+                } else if (buttonText === "C") {
+                    clearAll();
+                } else {
+                    handleOperator(buttonText);
+                }
+            });
+        });
+
+        function updateDisplay() {
+            display.textContent = currentInput;
+        }
+
+        function clearEntry() {
+            currentInput = "";
+            updateDisplay();
+        }
+
+        function clearAll() {
+            currentInput = "";
+            operator = "";
+            firstOperand = "";
+            updateDisplay();
+        }
+
+        function handleOperator(op) {
+            if (currentInput !== "") {
+                if (firstOperand === "") {
+                    firstOperand = currentInput;
+                    operator = op;
+                    currentInput = "";
+                } else {
+                    performCalculation();
+                    operator = op;
+                }
+            }
+        }
+
+        function performCalculation() {
+            if (currentInput !== "") {
+                const secondOperand = currentInput;
+                switch (operator) {
+                    case "+":
+                        currentInput = (parseFloat(firstOperand) + parseFloat(secondOperand)).toString();
+                        break;
+                    case "-":
+                        currentInput = (parseFloat(firstOperand) - parseFloat(secondOperand)).toString();
+                        break;
+                    case "*":
+                        currentInput = (parseFloat(firstOperand) * parseFloat(secondOperand)).toString();
+                        break;
+                    case "/":
+                        if (parseFloat(secondOperand) !== 0) {
+                            currentInput = (parseFloat(firstOperand) / parseFloat(secondOperand)).toString();
+                        } else {
+                            currentInput = "Error";
+                        }
+                        break;
+                    case "^":
+                        currentInput = Math.pow(parseFloat(firstOperand), parseFloat(secondOperand)).toString();
+                        break;
+                    default:
+                        break;
+                }
+
+                operator = "";
+                firstOperand = "";
+                updateDisplay();
+            }
+        }
+
+        function calculateSquareRoot() {
+            if (currentInput !== "") {
+                currentInput = Math.sqrt(parseFloat(currentInput)).toString();
+                updateDisplay();
+            }
+        }
+
+        function calculatePercentage() {
+            if (currentInput !== "") {
+                currentInput = (parseFloat(currentInput) / 100).toString();
+                updateDisplay();
+            }
+        }
+
+        function calculatePower() {
+            if (currentInput !== "") {
+                firstOperand = currentInput;
+                operator = "^";
+                currentInput = "";
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
